@@ -12,13 +12,14 @@ else
   puts "Haven't seen #{all_str} yet"
 end
 =end
-if File.exist?(ARGV[0])
+unless File.exist?(ARGV[0])
+  puts "File not found:" + ARGV[0]
+  exit 0
+end
   fields = File.readlines( "movies.txt" )
   fields.map! { |e| e.chomp }
   fields.map! { |e|  e.split("|") }
   fields.each{ |i| puts i[1] + " " + "*" * i[7][2].to_i if i[1].include? "Time " }
-else
-  puts "File not found:" + ARGV[0]
-end
+
 
 
