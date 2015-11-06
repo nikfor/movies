@@ -75,7 +75,6 @@ require 'date'
 require 'ostruct'
 
 NAME_FIELDS = [:url, :name, :year, :country, :date, :genre, :duration, :point, :author, :actors]
-MONTH_ARR = ["January", "February", "March", "April", "May", "June", "July", "August", "September","October", "November", "December"]
 
 films =  CSV.open("movies.txt", col_sep: "|").to_a.
   map{ |row| OpenStruct.new(Hash[*NAME_FIELDS.zip(row).flatten]) }  
@@ -84,30 +83,27 @@ films =  CSV.open("movies.txt", col_sep: "|").to_a.
 
 films.group_by{ |f| Date.strptime(f.date, '%Y-%m').mon if f.date.length >=7 }.
   delete_if{ |mon, group| mon == nil }.
-  sort_by{ |row| row[0] }.
-  each{ |mon, group| puts "#{MONTH_ARR[mon-1]} - #{group.size} films" }
+  sort_by(&:first).
+  each{ |mon_num, group| puts "#{Date::MONTHNAMES[mon_num]} - #{group.size} films" }
 
 #3    
 puts "------------------------------------------------------------\nFive longest films:"
-films.sort_by{ |f| f.duration.to_i }.
+films.sort_by(&:duration).
   last(5).reverse.
   each{|f| puts "#{f.name} #{f.genre} #{f.duration}" }
 
 
 # 3.3
 puts "------------------------------------------------------------\nComedy films:"
-films.sort_by{ |f| f.date }.
+films.sort_by(&:date).
   select{ |f| f.genre.include? "Comedy"}.
   each{|f| puts "#{f.name} #{f.genre} #{f.duration}" }
 
 # 3.4
 puts "------------------------------------------------------------\nAll directors alphabetically:"
-films.map{ |ln| ln.author.split(" ") }.
-  uniq.sort_by{ |d| d.last }.
-  each{ |d| 
-    d.each{ |i| print "#{i} " }
-    puts "\n"
-  } 
+films.map(&:author).uniq.
+  sort_by{ |d| d.split(' ').last }.
+  each{ |d| puts d } 
 
 # 3.5
 puts "------------------------------------------------------------\nCount films shot not in the USA:"
@@ -116,7 +112,7 @@ puts films.reject{ |f| f.country.include? "USA"}.count
 # bonus 1
 
 puts "------------------------------------------------------------\nGroup films by produce:"
-films.group_by{ |f| f.author}.
+films.group_by(&:author).
   each{|auth, mov| 
     puts "#{auth} \n #{mov.map{ |m| m.name}.join("\n - ").insert(0, "- ")}"
   }                                              
@@ -124,5 +120,7 @@ films.group_by{ |f| f.author}.
 # bonus 2
 puts "------------------------------------------------------------\nHow many time was removed each actor:"
 actors_arr = films.map{ |f| f.actors.split(",")}.
-  flatten.sort.group_by{ |a| a}.
+  flatten.sort.group_by(&:itself).
   each{ |act, group| puts "#{act} - #{group.size}" }
+
+
