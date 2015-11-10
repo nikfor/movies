@@ -33,7 +33,7 @@ puts "------------------------------------------------------------\nFive longest
 films.sort_by{ |f| f[:duration].to_i }.
   last(5).reverse.
   each{|f| puts "#{f[:name]} #{f[:genre]} #{f[:duration]}" }
-
+puts films.size
 
 # 3.3
 puts "------------------------------------------------------------\nComedy films:"
@@ -69,7 +69,7 @@ actors_arr = films.map{ |f| f[:actors].split(",")}.
   each{ |act, group| puts "#{act} - #{group.size}" }
 
 =end
-
+=begin
 require 'csv'
 require 'date'
 require 'ostruct'
@@ -122,5 +122,19 @@ puts "------------------------------------------------------------\nHow many tim
 actors_arr = films.map{ |f| f.actors.split(",")}.
   flatten.sort.group_by(&:itself).
   each{ |act, group| puts "#{act} - #{group.size}" }
+=end
+require 'csv'
+require 'date'
+require 'ostruct'
+require_relative 'class_MoviesList' 
+
+
+
+films = MovieList.new("movies.txt", "|")
+
+#films.count_shot_not_country("Italy")
+#films.group_by_produce
+#films.rait_actors
+films.sort_by_field("duration")
 
 
