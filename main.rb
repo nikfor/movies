@@ -1,4 +1,9 @@
 =begin
+
+require 'csv'
+require 'date'
+require 'ostruct'
+
 good_movies =  [ 'Matrix', '300 Spartans', 'Dejavu', 'Spy games', 'Lucky number Slevin' ]
 bad_movies = %w{ Titanic Hatico Witch }
 
@@ -125,8 +130,7 @@ actors_arr = films.map{ |f| f.actors.split(",")}.
 =end
 require 'csv'
 require 'date'
-require 'ostruct'
-require_relative 'class_MoviesList' 
+require_relative 'movies_list' 
 
 
 
@@ -134,7 +138,8 @@ films = MovieList.new("movies.txt", "|")
 
 #films.count_shot_not_country("Italy")
 #films.group_by_produce
-#films.rait_actors
-films.sort_by_field("duration")
+films.rait_actors
+#films.sort_by_field("date")
+films.count_movie_in_month
 
 
