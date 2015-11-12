@@ -139,7 +139,7 @@ films = MovieList.new("movies.txt", "|")
 #films.count_shot_not_country("Italy")
 #films.group_by_produce
 films.rait_actors
-#films.sort_by_field("date")
+films.sort_by_field("author")
 films.count_movie_in_month
 
 

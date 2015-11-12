@@ -8,12 +8,11 @@ class MovieList
     @movie_arr = CSV.open(path.to_s, col_sep: separator.to_s).to_a.
       map{ |row| Movie.new(*row)}
   end
-
+    
   def count_movie_in_month
     puts "------------------------------------------------------------\n\nCount movies in month:\n\n"
-    @movie_arr.group_by{ |f| f.date.mon }.
-    delete_if{ |mon, group| mon == nil }.
-    sort_by(&:first).
+    @movie_arr.map{ |f| f.date }.compact.
+    group_by{ |d| d.mon }.sort_by(&:first).
     each{ |mon_num, group| puts "#{Date::MONTHNAMES[mon_num]} - #{group.size} films" }
   end
 
@@ -59,8 +58,7 @@ class MovieList
   end
 
   def sort_by_field(field)
-    unit_meash = ""
-    unit_meash = "min" if field == "duration"  
+    field == "duration" ? unit_meash = "min" : unit_meash = ""
     @movie_arr.sort_by{ |row| row.send field}.
       each{ |row| puts "#{row.name} - #{row.send field} #{unit_meash}" }
   end
