@@ -26,5 +26,6 @@ class Movie
   end
 
   attr_reader :url, :name, :year, :country, :date, :genre, :duration, :point, :author, :actors
+  attr_writer :point
   private :parse_date
 end

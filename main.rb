@@ -128,18 +128,28 @@ actors_arr = films.map{ |f| f.actors.split(",")}.
   flatten.sort.group_by(&:itself).
   each{ |act, group| puts "#{act} - #{group.size}" }
 =end
-require 'csv'
-require 'date'
+require_relative 'parse_date'
 require_relative 'movies_list' 
+require_relative 'my_movies_list'
+
+require 'csv'
 
 
 
-films = MovieList.new("movies.txt", "|")
-
+films = MyMoviesList.new("movies.txt", "|")
+films.user_score("Sin City", "2015-06-10", 4)
+films.user_score("The Hustler", "2015-05-01", 3)
+films.user_score("Forrest Gump", "2012-01-30", 5)
+films.user_score("The Godfather", "2015-11-01", 5)
+films.user_score("Jurassic Park", "2015-02-28", 2)
+films.user_score("Akira", "2013-02-10", 1)
+films.user_score("V for Vendetta", "2015-10-17", 3)
+films.recommend_from_notseen
+films.recommend_from_seen
 #films.count_shot_not_country("Italy")
 #films.group_by_produce
-films.rait_actors
-films.sort_by_field("author")
-films.count_movie_in_month
+
+#films.sort_by_field("author")
+#films.info
 
 

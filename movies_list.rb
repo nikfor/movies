@@ -6,14 +6,14 @@ class MovieList
   
   def initialize(path, separator)
     @movie_arr = CSV.open(path.to_s, col_sep: separator.to_s).to_a.
-      map{ |row| Movie.new(*row)}
+      map{ |row| Movie.new(*row) }
   end
     
   def count_movie_in_month
     puts "------------------------------------------------------------\n\nCount movies in month:\n\n"
     @movie_arr.map{ |f| f.date }.compact.
-    group_by{ |d| d.mon }.sort_by(&:first).
-    each{ |mon_num, group| puts "#{Date::MONTHNAMES[mon_num]} - #{group.size} films" }
+      group_by{ |d| d.mon }.sort_by(&:first).
+      each{ |mon_num, group| puts "#{Date::MONTHNAMES[mon_num]} - #{group.size} films" }
   end
 
   def five_longest
@@ -58,7 +58,7 @@ class MovieList
   end
 
   def sort_by_field(field)
-    field == "duration" ? unit_meash = "min" : unit_meash = ""
+    unit_meash = field == "duration" ? "min" : ""
     @movie_arr.sort_by{ |row| row.send field}.
       each{ |row| puts "#{row.name} - #{row.send field} #{unit_meash}" }
   end
