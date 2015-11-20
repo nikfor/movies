@@ -5,7 +5,7 @@ require 'date'
 class Movie 
 
   include ParseDate
-  
+
   def initialize(url, name, year, country, date, genre, duration, point, author, actors)
     @url      = url
     @name     = name
@@ -30,6 +30,10 @@ class Movie
     when 2001 .. DateTime.now.year
       NewMovie.new(*arr_f)
     end 
+  end
+
+  def weight
+    self.class::WEIGHT
   end
 
   def parse_date(input_date)
