@@ -27,7 +27,7 @@ class MyMoviesList < MovieList
     puts "\nFive not seen movies recommended for viewing:"
     i = 1
     @movie_arr.select{ |mov| mov.user_point.nil? }.
-      sort_by{ |mov| mov.point *= rand(100)*mov.WEIGHT }.first(5).
+      sort_by{ |mov| mov.point *= rand(100)*mov.class::WEIGHT }.first(5).
       each{ |mov| print "#{i}. "; i+=1; mov.description}    
   end
 
@@ -35,7 +35,7 @@ class MyMoviesList < MovieList
     puts "\nFive seen movies recommended for viewing:"
     i = 1
     @movie_arr.reject{ |mov| mov.user_point.nil? }.
-      sort_by{ |mov| mov.user_point *= rand(100)*(DateTime.now - mov.watched).to_i*mov.WEIGHT}.
+      sort_by{ |mov| mov.user_point *= rand(100)*(DateTime.now - mov.watched).to_i*mov.class::WEIGHT }.
       first(5).each{ |mov| print "#{i}. "; i+=1; mov.description }                          
   end
 end

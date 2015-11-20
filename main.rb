@@ -147,7 +147,7 @@ films.user_score("Akira", "2013-02-10", 1)
 films.user_score("V for Vendetta", "2015-10-17", 3)
 films.recommend_from_notseen
 films.recommend_from_seen
-#films.count_shot_not_country("Italy")
+films.count_shot_not_country("Italy")
 #films.group_by_produce
 
 #films.sort_by_field("author")

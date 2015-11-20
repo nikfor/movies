@@ -3,6 +3,9 @@ require 'date'
 
 
 class Movie 
+
+  include ParseDate
+  
   def initialize(url, name, year, country, date, genre, duration, point, author, actors)
     @url      = url
     @name     = name
