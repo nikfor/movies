@@ -137,6 +137,7 @@ require 'csv'
 
 
 films = MyMoviesList.new("movies.txt", "|")
+
 films.user_score("Sin City", "2015-06-10", 4)
 films.user_score("The Hustler", "2015-05-01", 3)
 films.user_score("Forrest Gump", "2012-01-30", 5)

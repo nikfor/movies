@@ -1,5 +1,7 @@
 require 'csv'
 require 'date'
+
+
 class Movie 
   def initialize(url, name, year, country, date, genre, duration, point, author, actors)
     @url      = url
@@ -12,6 +14,19 @@ class Movie
     @point    = point.to_f 
     @author   = author
     @actors   = actors.split(',')
+  end
+
+  def self.create(arr_f)
+    case arr_f[2].to_i
+    when 1900 .. 1945
+      AncientMovie.new(*arr_f) 
+    when 1946 .. 1968
+      ClassicMovie.new(*arr_f) 
+    when 1969 .. 2000
+      ModernMovie.new(*arr_f)
+    when 2001 .. DateTime.now.year
+      NewMovie.new(*arr_f)
+    end 
   end
 
   def parse_date(input_date)

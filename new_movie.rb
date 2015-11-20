@@ -6,7 +6,7 @@ class NewMovie < Movie
   include ParseDate
   
   def initialize(url, name, year, country, date, genre, duration, point, author, actors)
-    @weight = 0.7
+    @WEIGHT = 0.7
     super
   end
   
@@ -14,6 +14,6 @@ class NewMovie < Movie
     puts "#{@name} - new movie! Didn't look at the cinema???"
   end
   
-  attr_reader :weight
+  attr_reader :WEIGHT
   attr_accessor :user_point, :watched
 end

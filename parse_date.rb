@@ -10,5 +10,11 @@ module ParseDate
       Date.strptime(input_date, '%Y')
     end
   end
-  
+
+  def score(input_date, input_point )
+    @watched = Date.strptime(input_date, '%Y-%m-%d')
+    @user_point = input_point
+  end
 end
+
+
