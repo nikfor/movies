@@ -38,4 +38,5 @@ class MyMoviesList < MovieList
       sort_by{ |mov| mov.user_point *= rand(100)*(DateTime.now - mov.watched).to_i*mov.weight }.
       first(5).each{ |mov| print "#{i}. "; i+=1; mov.description }                          
   end
+
 end
