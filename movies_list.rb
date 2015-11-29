@@ -63,9 +63,8 @@ class MovieList
       each{ |row| puts "#{row.name} - #{row.send field} #{unit_meash}" }
   end
 
-
-  def printt
-    @movie_arr.each { |mov| yield(mov) if block_given? }
+  def printt(&block)
+    @movie_arr.each(&block)
   end
 
   def sorted_by 
@@ -74,15 +73,16 @@ class MovieList
 
   @@hsh_of_sorts = Hash.new{}
 
-  def add_sort_algo(key_block)
-    @@hsh_of_sorts[key_block] = lambda {@movie_arr.sort_by{ |mov| yield(mov) }}
+  def add_sort_algo(key_block, &block)
+    @@hsh_of_sorts[key_block] = block 
   end
 
   def sort_by(key_block)
     if @@hsh_of_sorts.has_key?(key_block) 
-      @@hsh_of_sorts[key_block].call.each{ |mov| puts "#{mov.year} #{mov.name} - #{mov.genre}" }
+      @movie_arr.sort_by{ |mov| @@hsh_of_sorts[key_block].call(mov) }.
+        each{ |mov| puts "#{mov.year} #{mov.name} - #{mov.genre}" }
     else
-      puts "set sorting for key #{key_block}"
+      raise "set sorting for key #{key_block}"
     end
   end
 
@@ -93,15 +93,15 @@ class MovieList
   end
 
   def filter(hsh_val)
-    mov_arr_temp = @movie_arr
-    hsh_val.each_pair do |key, val|
-      if key == :years 
-        mov_arr_temp.select!{ |mov| @@hsh_of_filters[key].call(mov, val[0], val[1])}
-      else
-        mov_arr_temp.select!{ |mov| @@hsh_of_filters[key].call(mov, val)}
-      end
-    end
-    mov_arr_temp.each{ |mov| puts "#{mov.name} - #{mov.year} - #{mov.point} - #{mov.genre}"}
+    @movie_arr.select{ |mov|
+      hsh_val.map{ |key, val|
+        if key == :years 
+          @@hsh_of_filters[key].call(mov, val[0], val[1])
+        else
+          @@hsh_of_filters[key].call(mov, val)
+        end
+      }.all?
+    }.each{ |mov| puts "#{mov.name} - #{mov.year} - #{mov.point} - #{mov.genre}"}
   end
 
 end

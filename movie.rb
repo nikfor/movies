@@ -48,9 +48,7 @@ class Movie
   end
 
   def has_genres?(genres)
-    temp = false
-    genres.each{ |gen| temp = true if @genre.split(",").include?(gen)}
-    return temp
+    !(genres & @genre.split(",")).empty?
   end
 
   attr_reader :url, :name, :year, :country, :date, :genre, :duration, :point, :author, :actors

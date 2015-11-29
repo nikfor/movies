@@ -134,8 +134,6 @@ require_relative 'my_movies_list'
 
 require 'csv'
 
-
-
 films = MyMoviesList.new("movies.txt", "|")
 
 films.user_score("Sin City", "2015-06-10", 4)
@@ -155,8 +153,8 @@ films.add_filter(:years){|movie, from, to| (from..to).include?(movie.year)}
 
 films.filter(
   genres: ['Comedy', 'Horror', 'Fantasy'],
-  years: [1956, 2010],
-  point_greater: 8.5
+  years: [1981, 2010],
+  point_greater: 8.7
 )
 
 #puts "true" if "Horror".include?(['Comedy','Horror'])
@@ -169,5 +167,6 @@ films.filter(
 #films.info
 #films.printt{ |mov| puts "#{mov.year} #{mov.name}" }
 #films.sorted_by{ |mov| [mov.genre, mov.year] }
+
 
 
