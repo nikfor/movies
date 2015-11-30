@@ -47,6 +47,10 @@ class Movie
     end
   end
 
+  def has_genres?(genres)
+    !(genres & @genre.split(",")).empty?
+  end
+
   attr_reader :url, :name, :year, :country, :date, :genre, :duration, :point, :author, :actors
   attr_writer :point
   private :parse_date

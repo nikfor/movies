@@ -62,4 +62,40 @@ class MovieList
     @movie_arr.sort_by{ |row| row.send field}.
       each{ |row| puts "#{row.name} - #{row.send field} #{unit_meash}" }
   end
+
+  def printt(&block)
+    @movie_arr.each(&block)
+  end
+
+  def sorted_by 
+    @movie_arr.sort_by{ |mov| yield(mov) }.each{ |mov| puts "#{mov.year} #{mov.name} - #{mov.genre}" }
+  end
+
+  @@hsh_of_sorts = Hash.new{}
+
+  def add_sort_algo(key_block, &block)
+    @@hsh_of_sorts[key_block] = block 
+  end
+
+  def sort_by(key_block)
+    if @@hsh_of_sorts.has_key?(key_block) 
+      @movie_arr.sort_by(&@@hsh_of_sorts[key_block]).
+        each{ |mov| puts "#{mov.year} #{mov.name} - #{mov.genre}" }
+    else
+      raise "set sorting for key #{key_block}"
+    end
+  end
+
+  @@hsh_of_filters = Hash.new{}
+
+  def add_filter(key_filter, &block)
+    @@hsh_of_filters[key_filter] = block
+  end
+
+  def filter(hsh_val)
+    @movie_arr.select{ |mov|
+      hsh_val.map{ |key, val| @@hsh_of_filters[key].call(mov, *val) }.all?
+    }.each{ |mov| puts "#{mov.name} - #{mov.year} - #{mov.point} - #{mov.genre} "}
+  end
+
 end
