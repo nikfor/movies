@@ -129,12 +129,14 @@ actors_arr = films.map{ |f| f.actors.split(",")}.
   each{ |act, group| puts "#{act} - #{group.size}" }
 =end
 require_relative 'parse_date'
+require_relative 'subclass_module'
 require_relative 'movies_list' 
 require_relative 'my_movies_list'
 
 require 'csv'
 
 films = MyMoviesList.new("movies.txt", "|")
+
 
 films.user_score("Sin City", "2015-06-10", 4)
 films.user_score("The Hustler", "2015-05-01", 3)
@@ -144,22 +146,26 @@ films.user_score("Jurassic Park", "2015-02-28", 2)
 films.user_score("Akira", "2013-02-10", 1)
 films.user_score("V for Vendetta", "2015-10-17", 3)
 
-films.add_sort_algo(:genres_years) { |movie| [movie.genre, movie.year] }
+films.add_sort_algo(:genres_years){ |movie| [movie.genre, movie.year] }
 #films.sort_by(:genres_years)
 
 films.add_filter(:point_greater){|movie, gpoint| movie.point > gpoint}
 films.add_filter(:genres){|movie, *genres| movie.has_genres?(genres)} 
 films.add_filter(:years){|movie, from, to| (from..to).include?(movie.year)}
 
-films.filter(
-  genres: ['Comedy', 'Horror', 'Fantasy'],
-  years: [1981, 2010],
-  point_greater: 8.5
-)
+#films.filter(
+#  genres: ['Comedy', 'Horror', 'Fantasy'],
+#  years: [1989, 2010],
+#  point_greater: 8.5
+#)
 
+#films.fffilter
 #puts "true" if "Horror".include?(['Comedy','Horror'])
 #films.recommend_from_notseen
 #films.recommend_from_seen
+films.recommend(7).select(&:drama?).
+  each { |mov| puts "#{mov.name} - #{mov.genre}" }
+
 #films.count_shot_not_country("Italy")
 #films.group_by_produce
 
