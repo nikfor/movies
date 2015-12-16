@@ -165,7 +165,6 @@ films.recommend_from_seen
 puts "-----------------------------"
 films.recommend(7).select(&:drama?).
   each { |mov| puts "#{mov.name} - #{mov.genre}" }
-
 #films.count_shot_not_country("Italy")
 #films.group_by_produce
 

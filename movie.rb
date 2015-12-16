@@ -1,5 +1,6 @@
 require 'csv'
 require 'date'
+require 'set'
 
 
 class Movie 
@@ -21,15 +22,13 @@ class Movie
     @@print_frmt_str = value
   end
 
-  class << self
-    def print_frmt_out
+    def self.print_frmt_out
       @@print_frmt_str
     end
-  end
 
 
   @@hsh_of_clssfilt = {}
-  @@array_of_genres = []
+  @@array_of_genres = Set.new
 
   def initialize(url, name, year, country, date, genre, duration, point, author, actors)
     @url      = url
@@ -42,7 +41,7 @@ class Movie
     @point    = point.to_f 
     @author   = author
     @actors   = actors.split(',')
-    @@array_of_genres.push(genre.split(","))
+    @@array_of_genres.merge(genre.split(","))
   end
 
   def self.create(arr_f)
@@ -85,10 +84,10 @@ class Movie
   end
 
   def method_missing (name, *args, &block)
-    if @@array_of_genres.flatten.uniq.include?(name.to_s.chop.capitalize)
+    if @@array_of_genres.include?(name.to_s.chop.capitalize) && (name.to_s[-1] == "?") && (args.empty?)
       @genre.include?(name.to_s.chop.capitalize)
     else
-      raise "undefined method #{name}" 
+      super  
     end
   end
 
