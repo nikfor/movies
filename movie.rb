@@ -6,8 +6,30 @@ class Movie
 
   include ParseDate
 
+  @@weight_variable = 0.4
+  @@print_frmt_str = ""
+
+  def self.weight (value)
+    @@weight_variable = value
+  end
+
+  def weight
+    @@weight_variable
+  end
+
+  def self.print_format (value)
+    @@print_frmt_str = value
+  end
+
+  class << self
+    def print_frmt_out
+      @@print_frmt_str
+    end
+  end
+
+
   @@hsh_of_clssfilt = {}
-  @@hsh_of_printfrmt = {}
+  @@array_of_genres = []
 
   def initialize(url, name, year, country, date, genre, duration, point, author, actors)
     @url      = url
@@ -20,6 +42,7 @@ class Movie
     @point    = point.to_f 
     @author   = author
     @actors   = actors.split(',')
+    @@array_of_genres.push(genre.split(","))
   end
 
   def self.create(arr_f)
@@ -45,12 +68,9 @@ class Movie
     @@hsh_of_clssfilt[self] = block
   end
 
-  def self.print_format(&block)
-    @@hsh_of_printfrmt[self] = block
-  end
-
   def descriptionn
-    tmp_hsh = { :url => @url, 
+    tmp_hsh = { 
+      :url => @url, 
       :name => @name, 
       :year => @year, 
       :country => @country, 
@@ -61,11 +81,15 @@ class Movie
       :author => @author, 
       :actors => @actors.join(", ") 
     }
-    puts sprintf( @@hsh_of_printfrmt[self.class].call, tmp_hsh)
+    puts sprintf( self.class.print_frmt_out, tmp_hsh )
   end
 
   def method_missing (name, *args, &block)
-    @genre.include?(name.to_s.chop.capitalize) 
+    if @@array_of_genres.flatten.uniq.include?(name.to_s.chop.capitalize)
+      @genre.include?(name.to_s.chop.capitalize)
+    else
+      raise "undefined method #{name}" 
+    end
   end
 
   attr_reader :url, :name, :year, :country, :date, :genre, :duration, :point, :author, :actors
