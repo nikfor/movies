@@ -15,7 +15,7 @@ class MyMoviesList < MovieList
   end
 
   def info
-    @movie_arr.each{ |m| p m }
+    @movie_arr.each{ |m| puts "#{m.name} #{m.genre}" }
   end
 
   def user_score(name_of_mov, date_of_viewing, user_point)
@@ -28,7 +28,7 @@ class MyMoviesList < MovieList
     i = 1
     @movie_arr.select{ |mov| mov.user_point.nil? }.
       sort_by{ |mov| mov.point *= rand(100)*mov.weight }.first(5).
-      each{ |mov| print "#{i}. "; i+=1; mov.description}    
+      each_with_index{ |mov, index| print "#{index+1}. "; mov.description }     
   end
 
   def recommend_from_seen
@@ -36,7 +36,13 @@ class MyMoviesList < MovieList
     i = 1
     @movie_arr.reject{ |mov| mov.user_point.nil? }.
       sort_by{ |mov| mov.user_point *= rand(100)*(DateTime.now - mov.watched).to_i*mov.weight }.
-      first(5).each{ |mov| print "#{i}. "; i+=1; mov.description }                          
+      first(5).each_with_index{ |mov, index| print "#{index+1}. "; mov.descriptionn }                          
+  end
+
+  def recommend(count_films)
+    @movie_arr.reject{ |mov| mov.user_point.nil? }.
+      sort_by{ |mov| mov.user_point *= rand(100)*(DateTime.now - mov.watched).to_i*mov.weight }.
+      first(count_films)                       
   end
 
 end
