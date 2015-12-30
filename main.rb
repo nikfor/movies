@@ -139,7 +139,7 @@ require 'nokogiri'
 require 'yaml'
 
 
-films = MyMoviesList.new("html")
+films = MyMoviesList.from_imdb #file("movies.txt","|")
 films.info
 
 films.save_to_yaml("xxx.yml")

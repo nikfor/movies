@@ -9,13 +9,17 @@ require 'csv'
 
 class MyMoviesList < MovieList
 
-  def initialize(type = "txt", path = "movies.txt", separator = '|')
-    case type
-    when "txt" then
-      @movie_arr = CSV.open(path.to_s, col_sep: separator.to_s).to_a.
-      map{ |row| Movie.create(row) }
-    when "html" then
-      @movie_arr = Array.new
+  def initialize(array_of_movies)
+    @movie_arr = array_of_movies
+  end
+
+  def self.from_file (path = "movies.txt", separator = '|')
+    self.new( CSV.open(path.to_s, col_sep: separator.to_s).to_a.
+      map{ |row| Movie.create(row) } )
+  end
+
+  def self.from_imdb
+    tmp_arr = Array.new
       doc = Nokogiri::HTML(open("http://www.imdb.com/chart/top"))
       doc.search('td.titleColumn a').
         each{ |a| 
@@ -30,9 +34,9 @@ class MyMoviesList < MovieList
           point = film_page.at('span[itemprop="ratingValue"]').content.to_s
           author = film_page.at('span[itemprop="director"] a span').content.to_s
           actors = film_page.search('span[itemprop="actors"] a span').map{ |act| act.content }.join(",").to_s
-          @movie_arr.push(Movie.create([url, name, year, country, date, genre, duration, point, author, actors]))
+          tmp_arr.push(Movie.create([url, name, year, country, date, genre, duration, point, author, actors]))
         }
-    end
+    self.new(tmp_arr)
   end
 
   def info
