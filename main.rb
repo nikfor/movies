@@ -132,11 +132,21 @@ require_relative 'parse_date'
 require_relative 'movies_list' 
 require_relative 'my_movies_list'
 
+
 require 'csv'
+require 'open-uri'
+require 'nokogiri'
+require 'yaml'
 
-films = MyMoviesList.new("movies.txt", "|")
 
+films = MyMoviesList.from_imdb #file("movies.txt","|")
+films.info
 
+films.save_to_yaml("xxx.yml")
+films.load_from_yaml("xxx.yml")
+puts "------"
+films.info
+=begin
 films.user_score("Sin City", "2015-06-10", 4)
 films.user_score("The Hustler", "2015-05-01", 3)
 films.user_score("Forrest Gump", "2012-01-30", 5)
@@ -168,10 +178,10 @@ films.recommend(7).select(&:drama?).
 #films.count_shot_not_country("Italy")
 #films.group_by_produce
 
+
+
 #films.sort_by_field("author")
 #films.info
 #films.printt{ |mov| puts "#{mov.year} #{mov.name}" }
 #films.sorted_by{ |mov| [mov.genre, mov.year] }
-
-
-
+=end
