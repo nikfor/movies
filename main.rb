@@ -137,15 +137,22 @@ require 'csv'
 require 'open-uri'
 require 'nokogiri'
 require 'yaml'
+require 'themoviedb-api'
 
 
-films = MyMoviesList.from_imdb #file("movies.txt","|")
-films.info
 
-films.save_to_yaml("xxx.yml")
-films.load_from_yaml("xxx.yml")
-puts "------"
-films.info
+#films = MyMoviesList.from_tmdb #from_file("movies.txt","|")
+tmp = Array.new
+MyMoviesList.send(:get_movie_tmdb, 157336, tmp)
+#films.save_to_yaml("xxx.yml")
+#films.load_from_yaml("xxx.yml")
+
+
+
+#films.info
+#1231.to_s.each_char{ |i| p i }
+#puts [1, 2, 2, 1, 1].group_by(&:itself)
+
 =begin
 films.user_score("Sin City", "2015-06-10", 4)
 films.user_score("The Hustler", "2015-05-01", 3)

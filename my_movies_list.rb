@@ -6,8 +6,11 @@ require_relative "modern_movie"
 require_relative "new_movie"
 require 'date'
 require 'csv'
+require 'themoviedb-api'
 
 class MyMoviesList < MovieList
+
+  Tmdb::Api.key("20de3eaf1221e1c1fb48f44ab5178cfb")
 
   def initialize(array_of_movies)
     @movie_arr = array_of_movies
@@ -23,24 +26,22 @@ class MyMoviesList < MovieList
       doc = Nokogiri::HTML(open("http://www.imdb.com/chart/top"))
       doc.search('td.titleColumn a').
         each{ |a| 
-          film_page = Nokogiri::HTML(open("http://www.imdb.com#{a["href"]}"))
-          url = "http://www.imdb.com/chart/top#{a["href"]}"
-          name = a.content.to_s
-          year = film_page.at('h1 span[id="titleYear"]').content.delete('()')[0..3].to_s
-          country = film_page.at("h4[text()='Country:'] ~ a").content.to_s
-          date = film_page.at('meta[itemprop="datePublished"]')["content"].to_s
-          genre = film_page.search('span[itemprop="genre"]').map{ |genre| genre.content }.join(",").to_s
-          duration = film_page.at('time[itemprop="duration"]')["datetime"].delete("PTM").concat(" min").to_s
-          point = film_page.at('span[itemprop="ratingValue"]').content.to_s
-          author = film_page.at('span[itemprop="director"] a span').content.to_s
-          actors = film_page.search('span[itemprop="actors"] a span').map{ |act| act.content }.join(",").to_s
-          tmp_arr.push(Movie.create([url, name, year, country, date, genre, duration, point, author, actors]))
+          push_in_tmp_arr("http://www.imdb.com#{a["href"]}", tmp_arr)
         }
     self.new(tmp_arr)
   end
 
+  def self.from_tmdb
+    tmp_arr = Array.new
+    for i in 1..2
+      Tmdb::Movie.top_rated(page: i).results.
+      each{ |mov| get_movie_tmdb(mov.id, tmp_arr) }
+    end
+    self.new(tmp_arr)
+  end
+
   def info
-    @movie_arr.each{ |m| puts "#{m.name} #{m.year} #{m.point} #{m.actors.join(", ")}" }
+    @movie_arr.each{ |m| puts "#{m.name} #{m.date} #{m.point} #{m.actors.join(", ")}" }
   end
 
   def user_score(name_of_mov, date_of_viewing, user_point)
@@ -76,6 +77,38 @@ class MyMoviesList < MovieList
 
   def load_from_yaml (path)
     @movie_arr = YAML.load (File.open(path))
+  end
+
+  private
+
+  def self.push_in_tmp_arr (link, arr)
+    film_page = Nokogiri::HTML(open(link))
+    url = link
+    name = film_page.at("h1.header span.itemprop [itemprop='name']").content.to_s
+    year = film_page.at('h1.header span.nobr').content.delete('()')[0..3].to_s
+    country = film_page.at("h4[text()='Country:'] ~ a").content.to_s
+    date = film_page.at('meta[itemprop="datePublished"]')["content"].to_s
+    genre = film_page.search('span[itemprop="genre"]').map{ |genre| genre.content }.join(",").to_s
+    duration = film_page.at('time[itemprop="duration"]')["datetime"].delete("PTM").concat(" min").to_s
+    point = film_page.at('span[itemprop="ratingValue"]').content.to_s
+    author = film_page.at('[itemprop="director"] a span').content.to_s
+    actors = film_page.search('[itemprop="actors"] a span').map{ |act| act.content }.join(",").to_s
+    arr.push(Movie.create([url, name, year, country, date, genre, duration, point, author, actors]))
+  end
+
+  def self.get_movie_tmdb (id, arr)
+    mov = Tmdb::Movie.detail(id)
+    url = mov.homepage
+    name = mov.title
+    year = mov.release_date.slice(0, 4)
+    country = mov.production_countries.map(&:name).join(",")
+    date = mov.release_date
+    genre = mov.genres.map(&:name).join(",")
+    duration = mov.runtime
+    point = mov.vote_average
+    author = Tmdb::Movie.director(id).first.nil? ? " " : Tmdb::Movie.director(id).first.name
+    actors = Tmdb::Movie.cast(id).first(3).map(&:name).join(",")
+    arr.push(Movie.create([url, name, year, country, date, genre, duration, point, author, actors]))
   end
 
 end
