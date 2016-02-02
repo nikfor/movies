@@ -10,6 +10,8 @@ class Movie
   @@weight_variable = 0.4
   @@print_frmt_str = ""
 
+  FIELDS_FOR_SORT = ["url", "name", "year", "country", "date", "genre", "duration", "point", "author", "actors"]
+
   def self.weight (value)
     @@weight_variable = value
   end
@@ -43,6 +45,7 @@ class Movie
     @actors   = actors.split(',')
     @@array_of_genres.merge(genre.split(","))
   end
+
 
   def self.create(arr_f)
     @@hsh_of_clssfilt.detect { |key, val| val.call(arr_f[2].to_i) }[0].new(*arr_f)

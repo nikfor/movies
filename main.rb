@@ -142,12 +142,11 @@ require 'themoviedb-api'
 
 
 #films = MyMoviesList.from_tmdb #from_file("movies.txt","|")
-tmp = Array.new
-MyMoviesList.send(:get_movie_tmdb, 157336, tmp)
+
+# tmp = Array.new
+p MyMoviesList.send(:get_movie_tmdb, 157336)
 #films.save_to_yaml("xxx.yml")
 #films.load_from_yaml("xxx.yml")
-
-
 
 #films.info
 #1231.to_s.each_char{ |i| p i }

@@ -60,6 +60,7 @@ class MovieList
   end
 
   def sort_by_field(field)
+    raise ArgumentError, "Field name is not valid" if !Movie::FIELDS_FOR_SORT.include?(field)
     unit_meash = field == "duration" ? "min" : ""
     @movie_arr.sort_by{ |row| row.send field}#.      
       #each{ |row| puts "#{row.name} - #{row.send field} #{unit_meash}" }

@@ -26,7 +26,7 @@ class MyMoviesList < MovieList
       doc = Nokogiri::HTML(open("http://www.imdb.com/chart/top"))
       doc.search('td.titleColumn a').
         each{ |a| 
-          push_in_tmp_arr("http://www.imdb.com#{a["href"]}", tmp_arr)
+          tmp_arr.push(Movie.create(get_movie_imdb("http://www.imdb.com#{a["href"]}")))
         }
     self.new(tmp_arr)
   end
@@ -35,10 +35,11 @@ class MyMoviesList < MovieList
     tmp_arr = Array.new
     for i in 1..2
       Tmdb::Movie.top_rated(page: i).results.
-      each{ |mov| get_movie_tmdb(mov.id, tmp_arr) }
+      each{ |mov| tmp_arr.push(Movie.create(get_movie_tmdb(mov.id))) }
     end
     self.new(tmp_arr)
   end
+  
 
   def info
     @movie_arr.each{ |m| puts "#{m.name} #{m.date} #{m.point} #{m.actors.join(", ")}" }
@@ -81,10 +82,10 @@ class MyMoviesList < MovieList
 
   private
 
-  def self.push_in_tmp_arr (link, arr)
+  def self.get_movie_imdb (link)
     film_page = Nokogiri::HTML(open(link))
     url = link
-    name = film_page.at("h1.header span.itemprop [itemprop='name']").content.to_s
+    name = film_page.at("h1.header span.itemprop[itemprop='name']").content.to_s
     year = film_page.at('h1.header span.nobr').content.delete('()')[0..3].to_s
     country = film_page.at("h4[text()='Country:'] ~ a").content.to_s
     date = film_page.at('meta[itemprop="datePublished"]')["content"].to_s
@@ -93,10 +94,10 @@ class MyMoviesList < MovieList
     point = film_page.at('span[itemprop="ratingValue"]').content.to_s
     author = film_page.at('[itemprop="director"] a span').content.to_s
     actors = film_page.search('[itemprop="actors"] a span').map{ |act| act.content }.join(",").to_s
-    arr.push(Movie.create([url, name, year, country, date, genre, duration, point, author, actors]))
+    [url, name, year, country, date, genre, duration, point, author, actors]
   end
 
-  def self.get_movie_tmdb (id, arr)
+  def self.get_movie_tmdb (id)
     mov = Tmdb::Movie.detail(id)
     url = mov.homepage
     name = mov.title
@@ -108,7 +109,7 @@ class MyMoviesList < MovieList
     point = mov.vote_average
     author = Tmdb::Movie.director(id).first.nil? ? " " : Tmdb::Movie.director(id).first.name
     actors = Tmdb::Movie.cast(id).first(3).map(&:name).join(",")
-    arr.push(Movie.create([url, name, year, country, date, genre, duration, point, author, actors]))
+    [url, name, year, country, date, genre, duration, point, author, actors]
   end
 
 end
