@@ -81,12 +81,9 @@ class MovieList
   end
 
   def sort_by(key_block)
-    if @@hsh_of_sorts.has_key?(key_block) 
-      @movie_arr.sort_by(&@@hsh_of_sorts[key_block])#.
+    raise ArgumentError, "Set sorting for key #{key_block}" if !@@hsh_of_sorts.has_key?(key_block) 
+      @movie_arr.sort_by(&@@hsh_of_sorts[key_block])
         #each{ |mov| puts "#{mov.year} #{mov.name} - #{mov.genre}" }
-    else
-      raise "set sorting for key #{key_block}"
-    end
   end
 
   @@hsh_of_filters = Hash.new{}
@@ -96,6 +93,8 @@ class MovieList
   end
 
   def filter(hsh_val)
+    hsh_val.each_key{ |input_key| 
+      raise ArgumentError,"Add the filter - #{input_key}" unless @@hsh_of_filters.map{ |key, val| key }.include?(input_key) }
     @movie_arr.select{ |mov|
       hsh_val.map{ |key, val| @@hsh_of_filters[key].call(mov, *val) }.all?
     }#.each{ |mov| puts "#{mov.name} - #{mov.year} - #{mov.point} - #{mov.genre} "}

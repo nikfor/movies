@@ -55,14 +55,16 @@ describe MyMoviesList do
   end
 
   describe :sort_by_field do
-    subject{ films.sort_by_field("year") }
-    let(:expected){ films.movie_arr.sort_by(&:year) }
-    it{ should == expected }
-  end
+    context 'if passed valid field' do
+      subject{ films.sort_by_field("year") }
+      let(:expected){ films.movie_arr.sort_by(&:year) }
+      it{ should == expected }
+    end
 
-  describe :sort_by_field do #if passed not valid field
-    subject{ lambda{films.sort_by_field("abrvalg")} }
-    it{ should raise_error(ArgumentError) }
+    context 'if passed not valid field' do
+      subject{ lambda{films.sort_by_field("abrvalg")} }
+      it{ should raise_error(ArgumentError) }
+    end
   end
 
   describe :sorted_by do
@@ -72,47 +74,98 @@ describe MyMoviesList do
   end
 
   describe :sort_by do
-    subject do 
-      films.add_sort_algo(:years_names){ |mov| [mov.year, mov.name] }
-      films.sort_by(:years_names)
+    context "if a key for sorting the correct" do
+      subject do 
+        films.add_sort_algo(:years_names){ |mov| [mov.year, mov.name] }
+        films.sort_by(:years_names)
+      end
+      let(:expected){ films.movie_arr.sort_by{ |mov| [mov.year, mov.name]} }
+      it{ should == expected }
     end
-    let(:expected){ films.movie_arr.sort_by{ |mov| [mov.year, mov.name]} }
-    it{ should == expected }
+    context "if a key for sorting isn't correct" do
+      subject{lambda{ films.sort_by(:abrvalg) }}
+      it{ should raise_error(ArgumentError)}
+    end
   end
 
   describe :filter do
-    subject do
+    before(:each) do
       films.add_filter(:point_greater){|movie, gpoint| movie.point > gpoint}
       films.add_filter(:genres){|movie, *genres| movie.has_genres?(genres)} 
       films.add_filter(:years){|movie, from, to| (from..to).include?(movie.year)}
-      films.filter(
-        genres: ['Comedy', 'Horror', 'Fantasy'],
-        years: [1990, 2000],
-        point_greater: 8.2)
     end
-    let(:expected) do
-      films.movie_arr.select{ |mov|  1990 <= mov.year && mov.year <= 2000 && 
-        mov.has_genres?(['Comedy', 'Horror', 'Fantasy']) &&
-        mov.point > 8.2 
+    context 'if pass all filters' do
+      subject do
+        films.filter(
+          genres: ['Comedy', 'Horror', 'Fantasy'],
+          years: [1990, 2000],
+          point_greater: 8.2)
+      end
+      let(:expected) do
+        films.movie_arr.select{ |mov|  1990 <= mov.year && mov.year <= 2000 && 
+          mov.has_genres?(['Comedy', 'Horror', 'Fantasy']) &&
+          mov.point > 8.2 
+        }
+      end
+      it{ should == expected }
+    end
+    context 'if pass not valid filter key' do
+      it { expect{films.filter(
+            genres: ['Comedy', 'Horror', 'Fantasy'],
+            qwerty: [1990, 2000],
+            point_greater: 8.2)}.to raise_error(ArgumentError)
       }
     end
-    it{ should == expected }
+    context 'if pass part of all filters' do
+      subject do
+        films.filter(
+          years: [1990, 2000],
+          point_greater: 8.2)
+      end
+      let(:expected) do
+        films.movie_arr.select{ |mov|  1990 <= mov.year && mov.year <= 2000 && 
+          mov.point > 8.2 
+        }
+      end
+      it{ should == expected }
+    end
+    context 'if pass not crossed filters' do
+      subject do
+        films.filter(
+          genres: ['Comedy', 'Horror', 'Fantasy'],
+          years: [1990, 1994],
+          point_greater: 8.2)
+      end
+      it{ should == [] }
+    end
   end
 
   describe :from_file do
-    subject{ MyMoviesList.from_file("movies.txt","|").movie_arr }
-    let(:expected) do
-      MyMoviesList.new( CSV.open("movies.txt", col_sep: "|").to_a.
-      map{ |row| Movie.create(row) } ).movie_arr
+    context "if file exist" do
+      subject{ MyMoviesList.from_file("movies.txt","|").movie_arr }
+      let(:expected) do
+        MyMoviesList.new( CSV.open("movies.txt", col_sep: "|").to_a.
+        map{ |row| Movie.create(row) } ).movie_arr
+      end
+      it{ should == expected}
     end
-    it{ should == expected}
+    context "if file don't exist" do
+      it { expect{MyMoviesList.from_file("abrvalg.txt","|")}.
+        to raise_error(Errno::ENOENT) }
+    end
   end
   
   describe :load_from_yaml do
-    subject{ films.load_from_yaml("xxx.yml")
-              films.movie_arr }
-    let(:expected){ YAML.load(File.open("xxx.yml")) }
-    it{ should == expected }
+    context "if file exist" do
+      subject{ films.load_from_yaml("xxx.yml")
+               films.movie_arr }
+      let(:expected){ YAML.load(File.open("xxx.yml")) }
+      it{ should == expected }
+    end
+    context "if file don't exist" do
+      it { expect{films.load_from_yaml("abrvalg.yml")}.
+        to raise_error(Errno::ENOENT) }
+    end
   end
 
   describe :get_movie_imdb do

@@ -17,6 +17,7 @@ class MyMoviesList < MovieList
   end
 
   def self.from_file (path = "movies.txt", separator = '|')
+    raise Errno::ENOENT, "such file doesn't exist" unless File.exists?(path)
     self.new( CSV.open(path.to_s, col_sep: separator.to_s).to_a.
       map{ |row| Movie.create(row) } )
   end
@@ -31,32 +32,13 @@ class MyMoviesList < MovieList
     self.new(tmp_arr)
   end
 
-  def self.get_movie_tmdb (id)
-    mov = Tmdb::Movie.detail(id)
-    puts "++++++++++++++++++++++++++"
-    p url = mov.homepage
-    name = mov.title
-    year = mov.release_date.slice(0, 4)
-    country = mov.production_countries.map(&:name).join(",")
-    date = mov.release_date
-    genre = mov.genres.map(&:name).join(",")
-    duration = mov.runtime
-    point = mov.vote_average
-    author = Tmdb::Movie.director(id).first.nil? ? " " : Tmdb::Movie.director(id).first.name
-    actors = Tmdb::Movie.cast(id).first(3).map(&:name).join(",")
-    [url, name, year, country, date, genre, duration, point, author, actors]
-  end
-
   def self.from_tmdb
-    #tmp_arr = Array.new
-    puts "------------------------------------------"
-    p get_movie_tmdb(157336)
-    puts "------------------------------------------"
-    # for i in 1..1
-    #   Tmdb::Movie.top_rated(page: i).results.
-    #     each{ |mov| p get_movie_tmdb(mov.id)}#tmp_arr.push(Movie.create(get_movie_tmdb(mov.id))) }
-    # end
-    #self.new(tmp_arr)
+    tmp_arr = Array.new
+    for i in 1..2
+      Tmdb::Movie.top_rated(page: i).results.
+        each{ |mov| tmp_arr.push(Movie.create(get_movie_tmdb(mov.id))) }
+    end
+    self.new(tmp_arr)
   end
   
 
@@ -96,6 +78,7 @@ class MyMoviesList < MovieList
   end
 
   def load_from_yaml (path)
+    raise Errno::ENOENT, "such file doesn't exist" unless File.exists?(path)
     @movie_arr = YAML.load (File.open(path))
   end
 
@@ -118,7 +101,6 @@ class MyMoviesList < MovieList
   end
 
   def self.get_movie_tmdb (id)
-    puts "++++++++++++++++++++++++++"
     mov = Tmdb::Movie.detail(id)
     url = mov.homepage
     name = mov.title
