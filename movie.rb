@@ -84,17 +84,7 @@ class Movie
   end
 
   def ==(other)
-    other.is_a?(Movie) && 
-    other.url == url && 
-    other.name == name && 
-    other.year == year && 
-    other.country == country && 
-    other.date == date && 
-    other.genre == genre && 
-    other.duration == duration && 
-    other.point == point && 
-    other.author == author && 
-    other.actors == actors
+    other.is_a?(Movie) && other.url == url
   end
 
   attr_reader :url, :name, :year, :country, :date, :genre, :duration, :point, :author, :actors

@@ -5,6 +5,7 @@ require_relative "../ancient_movie"
 require_relative "../classic_movie"
 require_relative "../modern_movie"
 require_relative "../new_movie"
+require "spec_helper"
 require 'csv'
 require 'yaml'
 require 'nokogiri'
@@ -31,11 +32,17 @@ describe MyMoviesList do
   end
 
   describe :select_by_genre do
-    subject{ films.select_by_genre("Drama") }
-    let(:expected){ films.movie_arr.sort_by(&:date).
-      select{ |f| f.genre.include?("Drama") } 
-    }
-    it{ should == expected }
+    context "if pass valid genre" do
+      subject{ films.select_by_genre("Drama") }
+      let(:expected){ films.movie_arr.sort_by(&:date).
+        select{ |f| f.genre.include?("Drama") } 
+      }
+      it{ should == expected }
+    end
+    context "if pass not valid genre" do
+      subject{ films.select_by_genre("Drama") }
+      it { expect{films.select_by_genre("Akjdfjg")}.to raise_error(ArgumentError) }
+    end
   end
 
   describe :all_directors do
@@ -74,9 +81,11 @@ describe MyMoviesList do
   end
 
   describe :sort_by do
+    before(:each) do
+      films.add_sort_algo(:years_names){ |mov| [mov.year, mov.name] }
+    end
     context "if a key for sorting the correct" do
       subject do 
-        films.add_sort_algo(:years_names){ |mov| [mov.year, mov.name] }
         films.sort_by(:years_names)
       end
       let(:expected){ films.movie_arr.sort_by{ |mov| [mov.year, mov.name]} }
@@ -151,7 +160,7 @@ describe MyMoviesList do
     end
     context "if file don't exist" do
       it { expect{MyMoviesList.from_file("abrvalg.txt","|")}.
-        to raise_error(Errno::ENOENT) }
+        to raise_error(ArgumentError) }
     end
   end
   
@@ -164,7 +173,7 @@ describe MyMoviesList do
     end
     context "if file don't exist" do
       it { expect{films.load_from_yaml("abrvalg.yml")}.
-        to raise_error(Errno::ENOENT) }
+        to raise_error(ArgumentError) }
     end
   end
 
@@ -185,11 +194,6 @@ describe MyMoviesList do
   end
 
   it "should pass true url" do
-    VCR.configure do |config|
-      config.cassette_library_dir = "spec"
-      config.hook_into :webmock 
-    end
-
     VCR.use_cassette("page1") do
       MyMoviesList.from_imdb
     end
@@ -197,10 +201,6 @@ describe MyMoviesList do
   end
 
   it "should call get_movie_imdb func of 250 times" do
-    VCR.configure do |config|
-      config.cassette_library_dir = "spec"
-      config.hook_into :webmock 
-    end
     #expect(MyMoviesList).to receive(:get_movie_imdb).exactly(250).times
     VCR.use_cassette("page1") do
       MyMoviesList.from_imdb

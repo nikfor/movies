@@ -17,32 +17,35 @@ class MyMoviesList < MovieList
   end
 
   def self.from_file (path = "movies.txt", separator = '|')
-    raise Errno::ENOENT, "such file doesn't exist" unless File.exists?(path)
+    raise ArgumentError, "such file doesn't exist" unless File.exists?(path)
     self.new( CSV.open(path.to_s, col_sep: separator.to_s).to_a.
       map{ |row| Movie.create(row) } )
   end
 
   def self.from_imdb
-    tmp_arr = Array.new
+    movies = []
       doc = Nokogiri::HTML(open("http://www.imdb.com/chart/top"))
       doc.search('td.titleColumn a').
         each{ |a| 
-          tmp_arr.push(Movie.create(get_movie_imdb("http://www.imdb.com#{a["href"]}")))
+          movies.push(Movie.create(get_movie_imdb("http://www.imdb.com#{a["href"]}")))
         }
-    self.new(tmp_arr)
+    self.new(movies)
   end
 
   def self.from_tmdb
-    tmp_arr = Array.new
-    for i in 1..2
-      Tmdb::Movie.top_rated(page: i).results.
-        each{ |mov| tmp_arr.push(Movie.create(get_movie_tmdb(mov.id))) }
-    end
-    self.new(tmp_arr)
+    movies = []
+    movies = (1..2).map { |pg|
+      Tmdb::Movie.top_rated(page: pg).results.map{|mov| Movie.create(get_movie_tmdb(mov.id)) }
+    }.flatten
+    self.new(movies)
+    # for i in 1..2
+    #   Tmdb::Movie.top_rated(page: i).results.
+    #     each{ |mov| tmp_arr.push(Movie.create(get_movie_tmdb(mov.id))) }
+    # end
   end
   
 
-  def info
+  def info  
     @movie_arr.each{ |m| puts "#{m.name} #{m.date} #{m.point} #{m.actors.join(", ")}" }
   end
 
@@ -78,7 +81,7 @@ class MyMoviesList < MovieList
   end
 
   def load_from_yaml (path)
-    raise Errno::ENOENT, "such file doesn't exist" unless File.exists?(path)
+    raise ArgumentError, "such file doesn't exist" unless File.exists?(path)
     @movie_arr = YAML.load (File.open(path))
   end
 

@@ -14,19 +14,19 @@ class MovieList
   def count_movie_in_month
     #puts "------------------------------------------------------------\n\nCount movies in month:\n\n"
     @movie_arr.map{ |f| f.date }.compact.
-      group_by{ |d| d.mon }.sort_by(&:first)#.
+      group_by(&:mon).sort_by(&:first)#.
       #each{ |mon_num, group| puts "#{Date::MONTHNAMES[mon_num]} - #{group.size} films" }
   end
 
   def five_longest
     #puts "------------------------------------------------------------\nFive longest films:"
-    @movie_arr.sort_by{ |row| row.duration.to_i }.
+    @movie_arr.sort_by(&:duration).
       last(5).reverse#.
       #each{|f| puts "#{f.name} #{f.genre} #{f.duration}" }
   end
 
   def select_by_genre(ingenre)
-    #puts "------------------------------------------------------------\n#{ingenre} films:"
+    raise ArgumentError, "Incorrect genre" unless @movie_arr.map { |movie| movie.genre.split(",") }.flatten.uniq.include?(ingenre)
     @movie_arr.sort_by(&:date).
       select{ |f| f.genre.include? ingenre}#.
       #each{|f| puts "#{f.name} #{f.genre} #{f.duration}" }

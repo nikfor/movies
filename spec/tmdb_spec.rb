@@ -1,7 +1,7 @@
 require_relative '../my_movies_list'
 require_relative '../movie'
 require_relative "../movies_list"
-
+require "spec_helper"
 
 require 'date'
 require 'open-uri'
@@ -10,13 +10,6 @@ require 'vcr'
 require 'themoviedb-api'
 
 describe MyMoviesList do
-
-  before(:each) do
-    VCR.configure do |config|
-      config.cassette_library_dir = "spec"
-      config.hook_into :webmock 
-    end
-  end
 
   it "receive true url" do
     VCR.use_cassette("page_tmdb") do
