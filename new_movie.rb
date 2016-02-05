@@ -11,7 +11,7 @@ class NewMovie < Movie
 
   print_format "%{name} - новое кино! А ты еще не посмотрел???"
 
-  filter { |year| (2001..DateTime.now.year).cover?(year) }
+  filter { |year| (2001..DateTime.now.year+200).cover?(year) }
 
   attr_accessor :user_point, :watched
 end

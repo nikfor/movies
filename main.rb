@@ -137,37 +137,43 @@ require 'csv'
 require 'open-uri'
 require 'nokogiri'
 require 'yaml'
+require 'themoviedb-api'
 
 
-films = MyMoviesList.from_imdb #file("movies.txt","|")
-films.info
 
-films.save_to_yaml("xxx.yml")
-films.load_from_yaml("xxx.yml")
-puts "------"
-films.info
+films = MyMoviesList.from_file("movies.txt","|")
+films.select_by_genre("Drqama")
+# tmp = Array.new
+#p MyMoviesList.send(:get_movie_tmdb, 157336)
+#films.save_to_yaml("xxx.yml")
+#films.load_from_yaml("xxqx.yml")
+
+#1231.to_s.each_char{ |i| p i }
+#puts [1, 2, 2, 1, 1].group_by(&:itself)
+
+
+# films.user_score("Sin City", "2015-06-10", 4)
+# films.user_score("The Hustler", "2015-05-01", 3)
+# films.user_score("Forrest Gump", "2012-01-30", 5)
+# films.user_score("The Godfather", "2015-11-01", 5)
+# films.user_score("Jurassic Park", "2015-02-28", 2)
+# films.user_score("Akira", "2013-02-10", 1)
+# films.user_score("V for Vendetta", "2015-10-17", 3)
+
+# #films.add_sort_algo(:genres_years){ |movie| [movie.genre, movie.year] }
+# #films.sort_by(:genres_years)
+
+# films.add_filter(:point_greater){|movie, gpoint| movie.point > gpoint}
+# films.add_filter(:genres){|movie, *genres| movie.has_genres?(genres)} 
+# films.add_filter(:years){|movie, from, to| (from..to).include?(movie.year)}
+
+# films.filter(
+#   genres: ['Comedy', 'Horror', 'Fantasy'],
+#   yearss: [1989, 2010],
+#   point_greater: 8.5
+# )
+
 =begin
-films.user_score("Sin City", "2015-06-10", 4)
-films.user_score("The Hustler", "2015-05-01", 3)
-films.user_score("Forrest Gump", "2012-01-30", 5)
-films.user_score("The Godfather", "2015-11-01", 5)
-films.user_score("Jurassic Park", "2015-02-28", 2)
-films.user_score("Akira", "2013-02-10", 1)
-films.user_score("V for Vendetta", "2015-10-17", 3)
-
-films.add_sort_algo(:genres_years){ |movie| [movie.genre, movie.year] }
-#films.sort_by(:genres_years)
-
-films.add_filter(:point_greater){|movie, gpoint| movie.point > gpoint}
-films.add_filter(:genres){|movie, *genres| movie.has_genres?(genres)} 
-films.add_filter(:years){|movie, from, to| (from..to).include?(movie.year)}
-
-#films.filter(
-#  genres: ['Comedy', 'Horror', 'Fantasy'],
-#  years: [1989, 2010],
-#  point_greater: 8.5
-#)
-
 #films.fffilter
 #puts "true" if "Horror".include?(['Comedy','Horror'])
 #films.recommend_from_notseen

@@ -1,14 +1,16 @@
 require 'csv'
 require 'date'
 require 'set'
-
+require_relative 'parse_date'
 
 class Movie 
-
+  
   include ParseDate
 
   @@weight_variable = 0.4
   @@print_frmt_str = ""
+
+  FIELDS_FOR_SORT = ["url", "name", "year", "country", "date", "genre", "duration", "point", "author", "actors"]
 
   def self.weight (value)
     @@weight_variable = value
@@ -22,9 +24,9 @@ class Movie
     @@print_frmt_str = value
   end
 
-    def self.print_frmt_out
-      @@print_frmt_str
-    end
+  def self.print_frmt_out
+    @@print_frmt_str
+  end
 
 
   @@hsh_of_clssfilt = {}
@@ -44,19 +46,9 @@ class Movie
     @@array_of_genres.merge(genre.split(","))
   end
 
+
   def self.create(arr_f)
     @@hsh_of_clssfilt.detect { |key, val| val.call(arr_f[2].to_i) }[0].new(*arr_f)
-  end
-
-  def parse_date(input_date)
-    case input_date.length
-    when 10
-      Date.strptime(input_date, '%Y-%m-%d')
-    when 7 
-      Date.strptime(input_date, '%Y-%m') 
-    when 4
-      nil
-    end
   end
 
   def has_genres?(genres)
@@ -89,6 +81,10 @@ class Movie
     else
       super  
     end
+  end
+
+  def ==(other)
+    other.is_a?(Movie) && other.url == url
   end
 
   attr_reader :url, :name, :year, :country, :date, :genre, :duration, :point, :author, :actors
