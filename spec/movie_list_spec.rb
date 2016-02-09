@@ -1,11 +1,11 @@
-require_relative '../my_movies_list'
-require_relative '../movie'
-require_relative "../movies_list"
-require_relative "../ancient_movie"
-require_relative "../classic_movie"
-require_relative "../modern_movie"
-require_relative "../new_movie"
-require "spec_helper"
+require_relative '../lib/movies/my_movies_list'
+require_relative '../lib/movies/movie'
+require_relative '../lib/movies/movies_list'
+require_relative '../lib/movies/ancient_movie'
+require_relative '../lib/movies/classic_movie'
+require_relative '../lib/movies/modern_movie'
+require_relative '../lib/movies/new_movie'
+require_relative "spec_helper"
 require 'csv'
 require 'yaml'
 require 'nokogiri'
@@ -17,7 +17,7 @@ require 'vcr'
 
 describe MyMoviesList do 
   
-  let(:films){MyMoviesList.from_file("movies.txt","|")}
+  let(:films){MyMoviesList.from_file("../files/movies.txt","|")}
 
   describe :five_longest do
     subject{ films.five_longest }
@@ -151,9 +151,9 @@ describe MyMoviesList do
 
   describe :from_file do
     context "if file exist" do
-      subject{ MyMoviesList.from_file("movies.txt","|").movie_arr }
+      subject{ MyMoviesList.from_file("../files/movies.txt","|").movie_arr }
       let(:expected) do
-        MyMoviesList.new( CSV.open("movies.txt", col_sep: "|").to_a.
+        MyMoviesList.new( CSV.open("../files/movies.txt", col_sep: "|").to_a.
         map{ |row| Movie.create(row) } ).movie_arr
       end
       it{ should == expected}
@@ -166,9 +166,9 @@ describe MyMoviesList do
   
   describe :load_from_yaml do
     context "if file exist" do
-      subject{ films.load_from_yaml("xxx.yml")
+      subject{ films.load_from_yaml("../files/xxx.yml")
                films.movie_arr }
-      let(:expected){ YAML.load(File.open("xxx.yml")) }
+      let(:expected){ YAML.load(File.open("../files/xxx.yml")) }
       it{ should == expected }
     end
     context "if file don't exist" do
@@ -178,8 +178,8 @@ describe MyMoviesList do
   end
 
   describe :get_movie_imdb do
-    subject{  MyMoviesList.send(:get_movie_imdb, "shoushenk.html") }
-    expected = [ "shoushenk.html", 
+    subject{  MyMoviesList.send(:get_movie_imdb, "files/shoushenk.html") }
+    expected = [ "files/shoushenk.html", 
       "Побег из Шоушенка", 
       "1994", 
       "USA", 

@@ -1,8 +1,7 @@
-require_relative '../my_movies_list'
-require_relative '../movie'
-require_relative "../movies_list"
-require "spec_helper"
-
+require_relative '../lib/movies/my_movies_list'
+require_relative '../lib/movies/movie'
+require_relative "../lib/movies/movies_list"
+require_relative "spec_helper"
 require 'date'
 require 'open-uri'
 require 'webmock/rspec'
