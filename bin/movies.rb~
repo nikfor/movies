@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+require 'optparse'
+require_relative '../lib/movies/my_movies_list'
+
+films = MyMoviesList.from_file("../files/movies.txt","|")
+films.send(ARGV[0])
+

@@ -1,10 +1,10 @@
 require 'rspec'
 require 'date'
-require_relative '../movie'
-require_relative "../ancient_movie"
-require_relative "../classic_movie"
-require_relative "../modern_movie"
-require_relative "../new_movie"
+require_relative '../lib/movies/movie'
+require_relative '../lib/movies/ancient_movie'
+require_relative '../lib/movies/classic_movie'
+require_relative '../lib/movies/modern_movie'
+require_relative '../lib/movies/new_movie'
 
 
 describe Movie do 
